@@ -1,5 +1,0 @@
-<IfModule mod_rewrite>
-RewriteEngine on
-
-RewriteRule ^([a-zA-Z]+)$ index.php?seccion=$1 [NC,L]
-</IfModule>
