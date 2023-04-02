@@ -1,0 +1,4 @@
+RewriteEngine on
+
+RewriteRule ^([a-z][\-a-z?]+)$ index.php?seccion=$1 [NC,L]
+ 
