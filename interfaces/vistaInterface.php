@@ -1,10 +1,11 @@
 <?php 
-namespace interfaces\vistaInterface;
+namespace vistaInterface;
 
 interface VistaInterface{
-    public function getHeaderVista();
-    public function getVista();
+    public function getHeaderVista($title);
     public function getFooterVista();
     public function getSecciones();
-    public function getGet();
+    public function getMenu();
+    public function getSeccionesSession();
+    public function limpiarPostString($post);
 }

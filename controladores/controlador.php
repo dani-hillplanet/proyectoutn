@@ -1,75 +1,81 @@
 <?php
-namespace controladores;
+namespace controlador;
 
-use interfaces\vistaInterface as inter;
+class Controlador {
 
-require_once "./interfaces/vistaInterface.php";
-
-class Controlador implements inter\vistaInterface{
     protected $seccion;
-    const ruta_vistas = "./vistas/";
+
+    const ruta_vistas = OPCIONES["sitio"]["vistas"] . "/";
 
     public function __construct(){
+
         $this->seccion = "404";
-    }
-    
-    public function getHeaderVista(){
-        include self::ruta_vistas . "header.php";
+
     }
 
-    public function getVista(){
+    public function devolverTemplate($ruta, $data = null){
 
-        $get_var = $this->getGet();
-
-        $this->getHeaderVista();
-
-        if( isset($get_var) ){
-            
-            if(in_array($get_var, $this->getSecciones()) ){
-                $this->seccion = $this->getSecciones()[$get_var];
-            }
-
-        }
-        
-        if($get_var == ""){
-            $this->seccion = "inicio";
-        }
-        
         ob_start();
 
-        include self::ruta_vistas . "contenido.php";
+        include $ruta;
 
         $output = ob_get_clean();
 
-        echo $output;
+        return $output;
 
-        $this->getFooterVista();
     }
 
-    public function getFooterVista(){
-        include self::ruta_vistas . "footer.php";
+    public function limpiarPostString($post){
+        
+        $var_post = \strtolower(filter_var($post, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH));
+        
+
+        return $var_post;
+
     }
 
-    public function getSecciones(){
-        return ["noticias"=>"noticias", "contacto"=>"contacto", "quienes-somos"=>"quienes-somos"];
-    }
-
-    public function getGet(){
-        $var_get = "";
-        if(isset($_GET["seccion"]))
-            $var_get = \strtolower(filter_var($_GET["seccion"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH));
+    public function limpiarGet($get){
+        
+        $var_get = \strtolower(filter_var($_GET["seccion"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH));
+        
 
         return $var_get;
+
     }
 
     public function getNavItems(){
+
         $content = "";
        
         foreach($this->getSecciones() as $key=>$seccion){
-            $active = $seccion == $this->getGet() ? "active": ""; 
+            $active = isset($_GET["seccion"]) && $seccion == $this->limpiarGet($_GET["seccion"]) ? "active": ""; 
             $content .= "<li class='nav-item {$active}'><a class='nav-link' href='{$seccion}'>{$seccion}</a></li>";
         }
 
         echo $content;
+
     }
+
+    protected function checkForSession(){
+
+        return ! isset( $_SESSION["validarIngreso"] ) ? true : false;
+
+    }
+
+    protected function devolverJson($data){
+
+        echo json_encode($data);
+        
+        die();
+
+    }
+
+    function redirect($url, $statusCode = 303){
+
+        header('Location: ' . $url, true, $statusCode);
+
+        die();
+
+    }
+
 }
